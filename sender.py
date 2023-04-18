@@ -22,25 +22,23 @@ class sender:
         with open(file_name, "rb") as f:
             file_bytes = f.read()  # read file as bytes
             readable_hash = hashlib.md5(file_bytes).hexdigest()
-            print(type(readable_hash))
             print(readable_hash)
 
         packet = bytearray(0)
         packet += readable_hash.encode("utf-8")
         packet += len(file_bytes).to_bytes(4, byteorder="big")
-        print("file bytes: ", len(file_bytes))
         packet += file_name[len(file_name)-3:len(file_name)].encode("utf-8")
-        print(file_name[len(file_name)-3:len(file_name)])
         packet += file_bytes
+
+        print("size of the file: ", len(file_bytes))
 
         counter = 0
         while counter + MAX_SENT_BYTES <= len(packet):
             client.send(packet[counter:counter+MAX_SENT_BYTES])
             counter += MAX_SENT_BYTES
-            print(len(packet[counter:]))
         client.send(packet[counter:])
 
-        print(len(packet))
+        client.close()
 
 
 if __name__ == "__main__":

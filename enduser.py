@@ -30,7 +30,6 @@ class enduser:
         readable_hash = packet[0:32].decode("utf-8")
         file_size = int.from_bytes(packet[32:36], byteorder='big')
         file_end = packet[36:39].decode("utf-8")
-        print(file_end)
         file_bytes = packet[39:]
         counter = len(packet[39:])
 
@@ -38,7 +37,6 @@ class enduser:
             packet = client_socket.recv(MAX_RECV_BYTES)
             file_bytes += packet
             counter += len(packet)
-            print(counter)
 
         if len(file_bytes) != file_size:
             print("FRAUD!!!!")
@@ -46,7 +44,7 @@ class enduser:
 
         hash1 = hashlib.md5(file_bytes).hexdigest()
         print("readable hash: " + readable_hash)
-        print("hash: " + hash1)
+        print("received hash: " + hash1)
         if readable_hash != hash1:
             print("FRAUD!!!!")
             exit(-1)
