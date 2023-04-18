@@ -9,7 +9,7 @@ import time
 proxy1_port = 20700
 proxy2_port = 30700
 MAX_RECV_BYTES = 65535
-MAX_SEND_BYTES = 32768
+MAX_SENT_BYTES = 65000
 IP = socket.gethostbyname(socket.gethostname())
 
 proxy1_addr = "10.9.0.3"
@@ -41,12 +41,27 @@ class proxy1:
         packet = client_socket.recv(MAX_RECV_BYTES)
         print(len(packet))
         readable_hash = packet[0:32].decode("utf-8")
-        self.file_end = packet[32:35].decode("utf-8")
+        data_len = int.from_bytes(packet[32:36], byteorder='big')
+        print("data len: ", data_len)
+        self.file_end = packet[36:39].decode("utf-8")
         print(self.file_end)
-        self.file_bytes = packet[35:]
+        self.file_bytes = packet[39:]
+        counter = len(self.file_bytes)
+        print("counter: ", counter)
+
+        while counter < data_len:
+            print("a")
+            packet = client_socket.recv(MAX_SENT_BYTES)
+            print(len(packet))
+            self.file_bytes += packet
+            counter += len(packet)
+            print("counter: ", counter)
+
+        print("file byter: ", len(self.file_bytes[0:data_len]))
         self.md5 = hashlib.md5(self.file_bytes).hexdigest()
         print(type(self.md5))
         print(self.md5)
+        print("readable hash: " + readable_hash)
         if self.md5 != readable_hash:
             print("FRAUD!!!!")
             exit(-1)

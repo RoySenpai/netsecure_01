@@ -11,7 +11,8 @@ proxy2_port = 30700
 proxy1_port = 20700
 end_user_port = 10545
 MAX_RECV_BYTES = 65535
-MAX_SEND_BYTES = 32768
+MAX_SENT_BYTES = 65000
+
 
 
 class proxy2:
@@ -56,7 +57,7 @@ class proxy2:
         packet += self.md5.encode("utf-8")
         packet += len(self.file_bytes).to_bytes(4, byteorder="big")
         packet += self.file_end.encode("utf-8")
-        packet[39:] = self.file_bytes
+        packet += self.file_bytes
 
         self.send_packet_via_tcp(packet)
 
@@ -131,7 +132,12 @@ class proxy2:
         ADDR = ("127.0.0.1", end_user_port)
         """ Connecting to the server. """
         tcp_socket.connect(ADDR)
-        tcp_socket.send(packet)
+
+        counter = 0
+        while counter + MAX_SENT_BYTES <= len(packet):
+            tcp_socket.send(packet[counter:counter+MAX_SENT_BYTES])
+            counter += MAX_SENT_BYTES
+        tcp_socket.send(packet[counter:])
         tcp_socket.close()
         return
 

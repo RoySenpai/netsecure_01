@@ -4,6 +4,7 @@ import struct
 
 sender_addr = "10.9.0.2"
 proxy1_addr = "10.9.0.3"
+MAX_SENT_BYTES = 65000
 
 
 class sender:
@@ -23,14 +24,23 @@ class sender:
             readable_hash = hashlib.md5(file_bytes).hexdigest()
             print(type(readable_hash))
             print(readable_hash)
-        packet = bytearray(32 + len(file_bytes))
-        packet[0:32] = readable_hash.encode("utf-8")
-        packet[32:35] = file_name[len(file_name)-3:len(file_name)].encode("utf-8")
+
+        packet = bytearray(0)
+        packet += readable_hash.encode("utf-8")
+        packet += len(file_bytes).to_bytes(4, byteorder="big")
+        print("file bytes: ", len(file_bytes))
+        packet += file_name[len(file_name)-3:len(file_name)].encode("utf-8")
         print(file_name[len(file_name)-3:len(file_name)])
-        packet[35:] = file_bytes
+        packet += file_bytes
+
+        counter = 0
+        while counter + MAX_SENT_BYTES <= len(packet):
+            client.send(packet[counter:counter+MAX_SENT_BYTES])
+            counter += MAX_SENT_BYTES
+            print(len(packet[counter:]))
+        client.send(packet[counter:])
 
         print(len(packet))
-        client.send(packet)
 
 
 if __name__ == "__main__":

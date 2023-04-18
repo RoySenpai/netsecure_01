@@ -32,6 +32,13 @@ class enduser:
         file_end = packet[36:39].decode("utf-8")
         print(file_end)
         file_bytes = packet[39:]
+        counter = len(packet[39:])
+
+        while counter < file_size:
+            packet = client_socket.recv(MAX_RECV_BYTES)
+            file_bytes += packet
+            counter += len(packet)
+            print(counter)
 
         if len(file_bytes) != file_size:
             print("FRAUD!!!!")
