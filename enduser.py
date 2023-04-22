@@ -1,6 +1,6 @@
 import socket
 import struct
-import hashlib 
+import hashlib
 
 end_user_addr = "10.9.0.5"
 MAX_RECV_BYTES = 65535
@@ -67,4 +67,3 @@ class enduser:
 if __name__ == "__main__":
     enduser1 = enduser()
     enduser1.enduser()
-

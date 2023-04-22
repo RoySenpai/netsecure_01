@@ -13,6 +13,7 @@ MAX_SENT_BYTES = 65000
 IP = socket.gethostbyname(socket.gethostname())
 
 proxy1_addr = "10.9.0.3"
+proxy2_addr = "10.9.0.4"
 TCP_PORT = 20989
 
 
@@ -69,9 +70,9 @@ class proxy1:
 
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.bind(("127.0.0.1", proxy1_port))
+        s.bind((proxy1_addr, proxy1_port))
         print("RUDP client is listening on port: ", proxy1_port)
-        dest = ("127.0.0.1", proxy2_port)
+        dest = (proxy2_ip_addr, proxy2_port)
         print("got connected to ", str(dest))
 
         packet = bytearray(0)
@@ -140,4 +141,4 @@ class proxy1:
 if __name__ == "__main__":
     proxy11 = proxy1()
     proxy11.get_packet_via_tcp()
-    proxy11.send_packet_via_rudp("127.0.0.1")
+    proxy11.send_packet_via_rudp("10.9.0.4")

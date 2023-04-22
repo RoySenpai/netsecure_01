@@ -13,7 +13,7 @@ class sender:
 
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        ADDR = ("127.0.0.1", 20989)
+        ADDR = ("10.9.0.3", 20989)
 
         """ Connecting to the server. """
         client.connect(ADDR)

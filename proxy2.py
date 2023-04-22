@@ -6,7 +6,9 @@ import os
 import pickle
 import time
 
+proxy1_addr = "10.9.0.3"
 proxy2_addr = "10.9.0.4"
+end_user_addr = "10.9.0.5"
 proxy2_port = 30700
 proxy1_port = 20700
 end_user_port = 10545
@@ -26,7 +28,7 @@ class proxy2:
     def proxy2(self):
         udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        udp_socket.bind(("127.0.0.1", proxy2_port))
+        udp_socket.bind(('', proxy2_port))
         print("Proxy2 is listening.")
 
         packet, address = udp_socket.recvfrom(MAX_RECV_BYTES)
@@ -36,7 +38,7 @@ class proxy2:
         data_length = int.from_bytes(packet[40:44], byteorder='big')
         if request_type == 0:
             self.md5 = packet[4:36].decode("utf-8")
-            self.accept_upload_request1(udp_socket, packet, address)
+            self.accept_upload_request(udp_socket, packet, address)
         else:
             print("ERROR: Wrong request type.")
             exit(-1)
@@ -59,7 +61,7 @@ class proxy2:
 
         self.send_packet_via_tcp(packet)
 
-    def accept_upload_request1(self, s: socket, packet, dest):
+    def accept_upload_request(self, s: socket, packet, dest):
         s.setblocking(False)
         last_seq_num = 0
 
@@ -112,7 +114,7 @@ class proxy2:
     def send_packet_via_tcp(self, packet):
         tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         tcp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        ADDR = ("127.0.0.1", end_user_port)
+        ADDR = (end_user_addr, end_user_port)
         """ Connecting to the server. """
         tcp_socket.connect(ADDR)
 
