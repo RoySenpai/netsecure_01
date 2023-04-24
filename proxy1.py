@@ -1,10 +1,6 @@
 import socket
 import struct
 import hashlib
-import os
-import random
-import string
-import time
 
 proxy1_port = 20700
 proxy2_port = 30700
@@ -117,8 +113,8 @@ class proxy1:
                         List.remove(i)
                 current_read = List[len(List) - 1][2]
                 excepted_sequence_num = recent_ack_packet_num
-            else:
-                recent_ack_packet_num = excepted_sequence_num
+        else:
+            recent_ack_packet_num = excepted_sequence_num
         # excepted_sequence_num += 1
         request_type = 27
         data_length = file_size - current_read

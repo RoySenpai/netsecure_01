@@ -1,6 +1,8 @@
 import socket
 import hashlib
-import struct
+from progress.spinner import MoonSpinner
+from time import sleep
+import sys
 
 sender_addr = "10.9.0.2"
 proxy1_addr = "10.9.0.3"
@@ -32,11 +34,16 @@ class sender:
 
         print("size of the file: ", len(file_bytes))
 
-        counter = 0
-        while counter + MAX_SENT_BYTES <= len(packet):
-            client.send(packet[counter:counter+MAX_SENT_BYTES])
-            counter += MAX_SENT_BYTES
-        client.send(packet[counter:])
+        with MoonSpinner('processing...') as bar:
+            counter = 0
+            while counter + MAX_SENT_BYTES <= len(packet):
+                client.send(packet[counter:counter+MAX_SENT_BYTES])
+                counter += MAX_SENT_BYTES
+                bar.next()
+                sleep(0.01)
+            client.send(packet[counter:])
+        print("finished!, file sent")
+
 
         client.close()
 

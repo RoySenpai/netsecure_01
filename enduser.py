@@ -1,5 +1,6 @@
 import socket
-import struct
+from progress.spinner import MoonSpinner
+from time import sleep
 import hashlib
 
 end_user_addr = "10.9.0.5"
@@ -33,11 +34,15 @@ class enduser:
         file_bytes = packet[39:]
         counter = len(packet[39:])
 
-        while counter < file_size:
-            packet = client_socket.recv(MAX_RECV_BYTES)
-            file_bytes += packet
-            counter += len(packet)
+        with MoonSpinner('Receiving file...') as spinner:
+            while counter < file_size:
+                packet = client_socket.recv(MAX_RECV_BYTES)
+                file_bytes += packet
+                counter += len(packet)
+                spinner.next()
+                sleep(0.1)
 
+        print("finished!")
         if len(file_bytes) != file_size:
             print("FRAUD!!!!")
             exit(-1)
